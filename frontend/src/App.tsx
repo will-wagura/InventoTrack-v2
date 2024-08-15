@@ -1,35 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Sidebar from "./components/Merchant/Sidebar";
+import Footer from "./components/Merchant/Footer";
+import Header from "./components/Merchant/Header";
+import Inbox from "./components/Merchant/Inbox";
+import AdminActivity from "./components/Merchant/AdminActivity";
+import Home from "./pages/Merchant/Home";
+import ManageUsers from "./pages/Merchant/ManageUsers";
+import ManageStorePage from "./pages/Merchant/ManageStorePage";
+import Order from "./pages/Merchant/Order";
+import Products from "./pages/Merchant/Products";
+import Settings from "./pages/Merchant/Settings";
+import Statistic from "./pages/Merchant/Statistic";
+import { containerStyle, mainContainerStyle, contentWrapperStyle } from "./AppStyles";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+const App: React.FC = () => {
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <Router>
+      <div style={containerStyle}>
+        <div style={containerStyle}>
+          <Sidebar />
+          <div style={mainContainerStyle}>
+            <Header />
+            <div style={contentWrapperStyle}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/manage-store" element={<ManageStorePage />} />
+                <Route path="/manage-users" element={<ManageUsers />} />
+                <Route path="/order" element={<Order />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/statistic" element={<Statistic />} />
+              </Routes>
+            </div>
+          </div>
+          <div className="right-sidebar">
+            <Inbox />
+            <AdminActivity />
+          </div>
+        </div>
+        <Footer />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    </Router>
+  );
+};
 
-export default App
+export default App;
