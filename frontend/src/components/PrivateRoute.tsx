@@ -1,21 +1,12 @@
-// src/components/PrivateRoute.tsx
-import React from "react";
-import { Route, Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import React from 'react';
+import { Navigate, Route } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
 
-interface PrivateRouteProps {
-  element: React.ReactNode;
-  path: string;
-}
+const PrivateRoute: React.FC<{ element: React.ReactNode; path: string }> = ({ element, path }) => {
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
-const PrivateRoute = ({ element, ...rest }: PrivateRouteProps) => {
-  const { isAuthenticated } = useAuth();
-
-  return isAuthenticated ? (
-    <Route {...rest} element={element} />
-  ) : (
-    <Navigate to="/login" replace />
-  );
+  return isAuthenticated ? <Route path={path} element={element} /> : <Navigate to="/login" />;
 };
 
 export default PrivateRoute;
