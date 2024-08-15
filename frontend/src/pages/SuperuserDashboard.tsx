@@ -14,7 +14,7 @@ import Settings from "./Merchant/Settings";
 import Statistic from "./Merchant/Statistic";
 import { containerStyle, mainContainerStyle, contentWrapperStyle } from "../AppStyles";
 
-const App: React.FC = () => {
+const SuperuserDashboard: React.FC = () => {
   return (
     <Router>
       <div style={containerStyle}>
@@ -45,4 +45,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default SuperuserDashboard;
