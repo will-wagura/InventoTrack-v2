@@ -26,25 +26,80 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import "../../styles/Merchant/HomePage.css";
+import { get } from "../../services/api";
 
-const salesPurchaseData = [
-  { name: "Oct", Purchase: 50000, Sales: 40000 },
-  { name: "Nov", Purchase: 55000, Sales: 45000 },
-  { name: "Dec", Purchase: 48000, Sales: 52000 },
-  { name: "Jan", Purchase: 51000, Sales: 48000 },
-  { name: "Feb", Purchase: 54000, Sales: 50000 },
-  { name: "Mar", Purchase: 49000, Sales: 46000 },
-  { name: "Apr", Purchase: 53000, Sales: 49000 },
-];
-
-const orderSummaryData = [
-  { name: "Jan", Ordered: 4000, Cancelled: 2400, Delivered: 2400 },
-  { name: "Feb", Ordered: 3000, Cancelled: 1398, Delivered: 2210 },
-  { name: "Mar", Ordered: 2000, Cancelled: 9800, Delivered: 2290 },
-  { name: "Apr", Ordered: 2780, Cancelled: 3908, Delivered: 2000 },
-  { name: "May", Ordered: 1890, Cancelled: 4800, Delivered: 2181 },
-];
 const Home: React.FC = () => {
+  const [salesOverview, setSalesOverview] = React.useState({
+    sales: 0,
+    revenue: 0,
+    profit: 0,
+    cost: 0,
+  });
+
+  const [inventorySummary, setInventorySummary] = React.useState({
+    quantityInHand: 0,
+    toBeReceived: 0,
+  });
+
+  const [purchaseOverview, setPurchaseOverview] = React.useState({
+    purchases: 0,
+    cost: 0,
+    cancels: 0,
+    returns: 0,
+  });
+
+  const [productSummary, setProductSummary] = React.useState({
+    suppliers: 0,
+    categories: 0,
+  });
+
+  const [salesPurchaseData, setSalesPurchaseData] = React.useState([]);
+  const [orderSummaryData, setOrderSummaryData] = React.useState([]);
+  const [topSellingStock, setTopSellingStock] = React.useState([]);
+  const [lowQuantityStock, setLowQuantityStock] = React.useState([]);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await get('/product');
+        console.log(data);
+
+        setSalesOverview({
+          sales: data.salesOverview.sales,
+          revenue: data.salesOverview.revenue,
+          profit: data.salesOverview.profit,
+          cost: data.salesOverview.cost,
+        });
+
+        setInventorySummary({
+          quantityInHand: data.inventorySummary.quantityInHand,
+          toBeReceived: data.inventorySummary.toBeReceived,
+        });
+
+        setPurchaseOverview({
+          purchases: data.purchaseOverview.purchases,
+          cost: data.purchaseOverview.cost,
+          cancels: data.purchaseOverview.cancels,
+          returns: data.purchaseOverview.returns,
+        });
+
+        setProductSummary({
+          suppliers: data.productSummary.suppliers,
+          categories: data.productSummary.categories,
+        });
+
+        setSalesPurchaseData(data.salesPurchaseData);
+        setOrderSummaryData(data.orderSummaryData);
+        setTopSellingStock(data.topSellingStock);
+        setLowQuantityStock(data.lowQuantityStock);
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className="home">
       <header className="home-header">
@@ -56,39 +111,23 @@ const Home: React.FC = () => {
             <h2>Sales Overview</h2>
             <div className="stats">
               <div className="stat">
-                <FontAwesomeIcon
-                  icon={faShoppingCart}
-                  className="icon"
-                  color="#17a2b8"
-                />
-                <span className="value">Ksh 7,832</span>
+                <FontAwesomeIcon icon={faShoppingCart} className="icon" color="#17a2b8" />
+                <span className="value">{`Ksh ${salesOverview.sales.toLocaleString()}`}</span>
                 <span className="label">Sales</span>
               </div>
               <div className="stat">
-                <FontAwesomeIcon
-                  icon={faMoneyBillWave}
-                  className="icon"
-                  color="#817AF3"
-                />
-                <span className="value">Ksh 19,300</span>
+                <FontAwesomeIcon icon={faMoneyBillWave} className="icon" color="#817AF3" />
+                <span className="value">{`Ksh ${salesOverview.revenue.toLocaleString()}`}</span>
                 <span className="label">Revenue</span>
               </div>
               <div className="stat">
-                <FontAwesomeIcon
-                  icon={faChartLine}
-                  className="icon"
-                  color="#58D365"
-                />
-                <span className="value">Ksh 858</span>
+                <FontAwesomeIcon icon={faChartLine} className="icon" color="#58D365" />
+                <span className="value">{`Ksh ${salesOverview.profit.toLocaleString()}`}</span>
                 <span className="label">Profit</span>
               </div>
               <div className="stat">
-                <FontAwesomeIcon
-                  icon={faDollarSign}
-                  className="icon"
-                  color="#DBA362"
-                />
-                <span className="value">Ksh 17,432</span>
+                <FontAwesomeIcon icon={faDollarSign} className="icon" color="#DBA362" />
+                <span className="value">{`Ksh ${salesOverview.cost.toLocaleString()}`}</span>
                 <span className="label">Cost</span>
               </div>
             </div>
@@ -97,21 +136,13 @@ const Home: React.FC = () => {
             <h2>Inventory Summary</h2>
             <div className="stats">
               <div className="stat">
-                <FontAwesomeIcon
-                  icon={faBoxes}
-                  className="icon"
-                  color="#817AF3"
-                />
-                <span className="value">668</span>
+                <FontAwesomeIcon icon={faBoxes} className="icon" color="#817AF3" />
+                <span className="value">{inventorySummary.quantityInHand}</span>
                 <span className="label">Quantity in Hand</span>
               </div>
               <div className="stat">
-                <FontAwesomeIcon
-                  icon={faTruck}
-                  className="icon"
-                  color="#DBA362"
-                />
-                <span className="value">200</span>
+                <FontAwesomeIcon icon={faTruck} className="icon" color="#DBA362" />
+                <span className="value">{inventorySummary.toBeReceived}</span>
                 <span className="label">To be received</span>
               </div>
             </div>
@@ -122,39 +153,23 @@ const Home: React.FC = () => {
             <h2>Purchase Overview</h2>
             <div className="stats">
               <div className="stat">
-                <FontAwesomeIcon
-                  icon={faShoppingBag}
-                  className="icon"
-                  color="#009ED8"
-                />
-                <span className="value">82</span>
+                <FontAwesomeIcon icon={faShoppingBag} className="icon" color="#009ED8" />
+                <span className="value">{purchaseOverview.purchases}</span>
                 <span className="label">Purchase</span>
               </div>
               <div className="stat">
-                <FontAwesomeIcon
-                  icon={faDollarSign}
-                  className="icon"
-                  color="#58D365"
-                />
-                <span className="value">Ksh 13,573</span>
+                <FontAwesomeIcon icon={faDollarSign} className="icon" color="#58D365" />
+                <span className="value">{`Ksh ${purchaseOverview.cost.toLocaleString()}`}</span>
                 <span className="label">Cost</span>
               </div>
               <div className="stat">
-                <FontAwesomeIcon
-                  icon={faBan}
-                  className="icon"
-                  color="#DBA362"
-                />
-                <span className="value">5</span>
+                <FontAwesomeIcon icon={faBan} className="icon" color="#DBA362" />
+                <span className="value">{purchaseOverview.cancels}</span>
                 <span className="label">Cancel</span>
               </div>
               <div className="stat">
-                <FontAwesomeIcon
-                  icon={faUndo}
-                  className="icon"
-                  color="#17a2b8"
-                />
-                <span className="value">Ksh 17,432</span>
+                <FontAwesomeIcon icon={faUndo} className="icon" color="#17a2b8" />
+                <span className="value">{`Ksh ${purchaseOverview.returns.toLocaleString()}`}</span>
                 <span className="label">Return</span>
               </div>
             </div>
@@ -163,21 +178,13 @@ const Home: React.FC = () => {
             <h2>Product Summary</h2>
             <div className="stats">
               <div className="stat">
-                <FontAwesomeIcon
-                  icon={faUser}
-                  className="icon"
-                  color="#58D365"
-                />
-                <span className="value">31</span>
+                <FontAwesomeIcon icon={faUser} className="icon" color="#58D365" />
+                <span className="value">{productSummary.suppliers}</span>
                 <span className="label">Number of Suppliers</span>
               </div>
               <div className="stat">
-                <FontAwesomeIcon
-                  icon={faList}
-                  className="icon"
-                  color="#817AF3"
-                />
-                <span className="value">21</span>
+                <FontAwesomeIcon icon={faList} className="icon" color="#817AF3" />
+                <span className="value">{productSummary.categories}</span>
                 <span className="label">Number of Categories</span>
               </div>
             </div>
@@ -227,49 +234,30 @@ const Home: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>Surgar</td>
-                  <td>30</td>
-                  <td>12</td>
-                  <td>Ksh10000</td>
-                </tr>
-                <tr>
-                  <td>Bread</td>
-                  <td>21</td>
-                  <td>15</td>
-                  <td>Ksh 20000</td>
-                </tr>
-                <tr>
-                  <td>Arimis</td>
-                  <td>19</td>
-                  <td>17</td>
-                  <td>Ksh 15000</td>
-                </tr>
+                {topSellingStock.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.name}</td>
+                    <td>{item.soldQuantity}</td>
+                    <td>{item.remainingQuantity}</td>
+                    <td>{`Ksh ${item.price.toLocaleString()}`}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
           <div className="card low-quantity-stock">
             <h2>Low Quantity Stock</h2>
             <div className="stock-items">
-              <div className="stock-item">
-                <img
-                  src="/src/assets/Maize - Flour _ Jumia KE.jpeg"
-                  alt="Tata Salt"
-                />
-                <div>
-                  <h3>Maize Flour</h3>
-                  <p>Remaining Quantity: 10 Packet</p>
+              {lowQuantityStock.map((item) => (
+                <div className="stock-item" key={item.id}>
+                  <img src={item.imageUrl} alt={item.name} />
+                  <div>
+                    <h3>{item.name}</h3>
+                    <p>{`Remaining Quantity: ${item.remainingQuantity}`}</p>
+                  </div>
+                  <span className="low-tag">Low</span>
                 </div>
-                <span className="low-tag">Low</span>
-              </div>
-              <div className="stock-item">
-                <img src="/src/assets/Cooking Salt 1_5kg - 1.5kg" alt="Lays" />
-                <div>
-                  <h3>Lays</h3>
-                  <p>Remaining Quantity: 15 Packet</p>
-                </div>
-                <span className="low-tag">Low</span>
-              </div>
+              ))}
             </div>
           </div>
         </div>

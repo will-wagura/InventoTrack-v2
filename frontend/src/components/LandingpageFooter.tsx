@@ -1,4 +1,4 @@
-import "./footer.css";
+import "./Footer.css";
 import newLogo from "../image/inventotrack-high-resolution-logo-transparent-side.png";
 
 interface Props {

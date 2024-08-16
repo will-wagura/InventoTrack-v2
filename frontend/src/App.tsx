@@ -17,14 +17,13 @@ import ClerkDashboard from './pages/Clerk/ClerkDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import SuperuserDashboard from './pages/SuperuserDashboard';
 import LoginForm from './components/LoginForm';
-
+import Home from './pages/Merchant/Home';
 const App: React.FC = () => {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const userRole = useSelector((state: RootState) => state.auth.user?.role);
 
   useEffect(() => {
-    // Example of auto-login logic, e.g., checking session storage or cookie
     const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
     if (storedUser) {
       dispatch(loginSuccess(storedUser));
@@ -37,8 +36,8 @@ const App: React.FC = () => {
         return <ClerkDashboard />;
       case 'admin':
         return <AdminDashboard />;
-      case 'superuser':
-        return <SuperuserDashboard />;
+      case 'superadmin':
+        return <Home />;
       default:
         return <Navigate to="/login" />;
     }
@@ -59,13 +58,35 @@ const App: React.FC = () => {
                   : <Navigate to="/login" />
               }
             />
-            <PrivateRoute path="/manage-store" element={<ManageStorePage />} isAuthenticated={isAuthenticated} />
-            <PrivateRoute path="/manage-users" element={<ManageUsers />} isAuthenticated={isAuthenticated} />
-            <PrivateRoute path="/order" element={<Order />} isAuthenticated={isAuthenticated} />
-            <PrivateRoute path="/products" element={<Products />} isAuthenticated={isAuthenticated} />
-            <PrivateRoute path="/settings" element={<Settings />} isAuthenticated={isAuthenticated} />
-            <PrivateRoute path="/statistic" element={<Statistic />} isAuthenticated={isAuthenticated} />
+            <Route
+              path="/manage-store"
+              element={<PrivateRoute element={<ManageStorePage />} isAuthenticated={isAuthenticated} />}
+            />
+            <Route
+              path="/manage-users"
+              element={<PrivateRoute element={<ManageUsers />} isAuthenticated={isAuthenticated} />}
+            />
+            <Route
+              path="/order"
+              element={<PrivateRoute element={<Order />} isAuthenticated={isAuthenticated} />}
+            />
+            <Route
+              path="/products"
+              element={<PrivateRoute element={<Products />} isAuthenticated={isAuthenticated} />}
+            />
+            <Route
+              path="/settings"
+              element={<PrivateRoute element={<Settings />} isAuthenticated={isAuthenticated} />}
+            />
+            <Route
+              path="/statistic"
+              element={<PrivateRoute element={<Statistic />} isAuthenticated={isAuthenticated} />}
+            />
+            <Route path="/merchant-dashboard" element={<PrivateRoute element={<Home />} isAuthenticated={isAuthenticated} />} />
+            <Route path="/clerk-dashboard" element={<PrivateRoute element={<ClerkDashboard />} isAuthenticated={isAuthenticated} />} />
+            <Route path="/admin-dashboard" element={<PrivateRoute element={<AdminDashboard />} isAuthenticated={isAuthenticated} />} />
             <Route path="/login" element={<LoginForm />} />
+            <Route path='/superuser-dashboard' element={<SuperuserDashboard />} />
           </Routes>
           {isAuthenticated && <Footer />}
         </div>

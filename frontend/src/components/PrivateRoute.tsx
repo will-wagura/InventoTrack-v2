@@ -1,12 +1,13 @@
 import React from 'react';
-import { Navigate, Route } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '../redux/store';
+import { Navigate } from 'react-router-dom';
 
-const PrivateRoute: React.FC<{ element: React.ReactNode; path: string }> = ({ element, path }) => {
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+interface PrivateRouteProps {
+  element: React.ReactElement;
+  isAuthenticated: boolean;
+}
 
-  return isAuthenticated ? <Route path={path} element={element} /> : <Navigate to="/login" />;
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ element, isAuthenticated }) => {
+  return isAuthenticated ? element : <Navigate to="/login" />;
 };
 
 export default PrivateRoute;

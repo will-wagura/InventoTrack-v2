@@ -12,38 +12,31 @@ import {
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
 import GoogleIcon from "@mui/icons-material/Google";
-import { auth, signInWithEmailAndPassword, signInWithPopup, googleAuthProvider } from "./firebaseConfig";
-import { Link as RouterLink} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { auth, signInWithPopup, googleAuthProvider } from "./firebaseConfig";
+import { Link as RouterLink } from "react-router-dom";
+import { login, post } from "../services/api";
+import { AxiosError } from "axios";
 
-interface Props {
-  setSnackbar: React.Dispatch<
-    React.SetStateAction<{
-      open: boolean;
-      message: string;
-      severity: string;
-    }>
-  >;
-}
-
-const LoginForm = ({ setSnackbar }: Props) => {
-  const [username, setUsername] = useState("");
+const LoginForm = () => {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState<{
-    username: string;
+    email: string;
     password: string;
   }>({
-    username: "",
+    email: "",
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const rememberedUser = localStorage.getItem("rememberedUser");
     if (rememberedUser) {
-      const { username, password } = JSON.parse(rememberedUser);
-      setUsername(username);
+      const { email, password } = JSON.parse(rememberedUser);
+      setEmail(email);
       setPassword(password);
       setRememberMe(true);
     }
@@ -51,7 +44,7 @@ const LoginForm = ({ setSnackbar }: Props) => {
 
   const validateForm = () => {
     const tempErrors = {
-      username: username ? "" : "Username is required",
+      email: email ? "" : "Email is required",
       password: password ? "" : "Password is required",
     };
     setErrors(tempErrors);
@@ -62,53 +55,67 @@ const LoginForm = ({ setSnackbar }: Props) => {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
+
     if (validateForm()) {
       setIsLoading(true);
       try {
-        await signInWithEmailAndPassword(auth, username, password);
-        setSnackbar({
-          open: true,
-          message: "Login successful!",
-          severity: "success",
-        });
+        // Perform the login request
+        const response = await login(email, password);
+
+        // Extract token, refresh token, role, and message from the response
+        const { access_token, refresh_token, role, message } = response.data;
+        console.log(access_token, refresh_token, role);
+
+        // Store tokens in localStorage
+        localStorage.setItem('access_token', access_token);
+        localStorage.setItem('refresh_token', refresh_token);
+
         if (rememberMe) {
           localStorage.setItem(
-            "rememberedUser",
-            JSON.stringify({ username, password })
+            'rememberedUser',
+            JSON.stringify({ email, password })
           );
         } else {
-          localStorage.removeItem("rememberedUser");
+          localStorage.removeItem('rememberedUser');
         }
+
+        // Navigate based on role
+        if (role === 'superadmin' || role === 'merchant') {
+          navigate('/merchant-dashboard');
+        } else {
+          switch (role) {
+            case 'admin':
+              navigate('/admin-dashboard');
+              break;
+            case 'clerk':
+              navigate('/clerk-dashboard');
+              break;
+            default:
+              navigate('/merchant-dashboard'); // Default route
+              break;
+          }
+        }
+
+        alert(message); // Use the message from the response
       } catch (error) {
-        const typedError = error as { message: string };
-        setSnackbar({
-          open: true,
-          message: "Login failed: " + typedError.message,
-          severity: "error",
-        });
+        const typedError = error as AxiosError<{ message: string }>;
+        alert('Login failed: ' + (typedError.response?.data.message || 'Unknown error'));
       } finally {
         setIsLoading(false);
       }
     }
   };
 
+
+
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithPopup(auth, googleAuthProvider);
-      // The signed-in user info.
       const user = result.user;
-      setSnackbar({
-        open: true,
-        message: `Welcome, ${user.displayName}!`,
-        severity: "success",
-      });
+      alert(`Welcome, ${user.displayName}!`);
     } catch (error) {
       const typedError = error as { message: string };
-      setSnackbar({
-        open: true,
-        message: "Google sign-in failed: " + typedError.message,
-        severity: "error",
-      });
+      alert("Google sign-in failed: " + typedError.message);
     }
   };
 
@@ -127,11 +134,11 @@ const LoginForm = ({ setSnackbar }: Props) => {
       </Typography>
       <TextField
         fullWidth
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        error={!!errors.username}
-        helperText={errors.username}
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        error={!!errors.email}
+        helperText={errors.email}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
