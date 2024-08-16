@@ -22,7 +22,7 @@ import "./ClerkDashboard.css";
 import { Item } from "../../types/Item";
 import PrivateRoute from "../../components/PrivateRoute";
 import { RootState } from "../../redux/store";
-import { login } from "../../redux/slices/authSlice";
+import { loginSuccess } from "../../redux/slices/authSlice";
 
 const ClerkDashboard = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -44,7 +44,7 @@ const ClerkDashboard = () => {
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user') || 'null');
     if (storedUser) {
-      dispatch(login(storedUser));
+      dispatch(loginSuccess(storedUser));
     }
   }, [dispatch]);
 
