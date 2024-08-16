@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import "./SupplyRequests.css";
 
 function SupplyRequests() {
@@ -8,43 +9,65 @@ function SupplyRequests() {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   const [supplyRequests, setSupplyRequests] = useState<
-    { item: string; quantity: number; status: string }[]
-  >(() => {
-    const savedRequests = localStorage.getItem("supplyRequests");
-    return savedRequests
-      ? JSON.parse(savedRequests)
-      : [
-          { item: "Item 3", quantity: 50, status: "Pending" },
-          { item: "Item 4", quantity: 100, status: "Approved" },
-        ];
+    { id: number; item: string; quantity: number; status: string }[]
+  >([]);
+
+  const getAuthToken = () => {
+    return localStorage.getItem("access_token");
+  };
+
+  const axiosInstance = axios.create({
+    baseURL: 'http://127.0.0.1:5000',
+    headers: {
+      Authorization: `Bearer ${getAuthToken()}`,
+    },
   });
+
+  const fetchSupplyRequests = async () => {
+    try {
+      const response = await axiosInstance.get('/supply');
+      const data = response.data || [];
+      setSupplyRequests(data);
+    } catch (error) {
+      console.error('Failed to fetch supply requests:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSupplyRequests();
+  }, []);
+  console.log(supplyRequests);
 
   useEffect(() => {
     localStorage.setItem("supplyRequests", JSON.stringify(supplyRequests));
   }, [supplyRequests]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (isEditing) {
-      const updatedRequests = [...supplyRequests];
-      updatedRequests[currentIndex] = {
-        item: itemName,
-        quantity: parseInt(quantity),
-        status: "Pending",
-      };
-      setSupplyRequests(updatedRequests);
-      setIsEditing(false);
-      setCurrentIndex(0);
-    } else {
-      const newRequest = {
-        item: itemName,
-        quantity: parseInt(quantity),
-        status: "Pending",
-      };
-      setSupplyRequests([...supplyRequests, newRequest]);
+    const newRequest = {
+      item: itemName,
+      quantity: parseInt(quantity),
+      status: "Pending",
+    };
+
+    try {
+      if (isEditing) {
+        await axiosInstance.put(`/supply/${supplyRequests[currentIndex].id}`, newRequest);
+        const updatedRequests = [...supplyRequests];
+        updatedRequests[currentIndex] = { ...newRequest, id: supplyRequests[currentIndex].id };
+        setSupplyRequests(updatedRequests);
+      } else {
+        const response = await axiosInstance.post('/supply', newRequest);
+        setSupplyRequests([...supplyRequests, response.data]);
+      }
+    } catch (error) {
+      console.error('Failed to process supply request:', error);
     }
+
     setItemName("");
     setQuantity("");
+    setIsEditing(false);
+    setCurrentIndex(0);
   };
 
   const handleEdit = (index: number) => {
@@ -55,9 +78,15 @@ function SupplyRequests() {
     setCurrentIndex(index);
   };
 
-  const handleDelete = (index: number) => {
-    const updatedRequests = supplyRequests.filter((_, i) => i !== index);
-    setSupplyRequests(updatedRequests);
+  const handleDelete = async (index: number) => {
+    const requestId = supplyRequests[index].id;
+    try {
+      await axiosInstance.delete(`/supply/${requestId}`);
+      const updatedRequests = supplyRequests.filter((_, i) => i !== index);
+      setSupplyRequests(updatedRequests);
+    } catch (error) {
+      console.error('Failed to delete supply request:', error);
+    }
   };
 
   return (
@@ -67,13 +96,13 @@ function SupplyRequests() {
         <input
           type="text"
           placeholder="Item Name"
-          value={itemName}
+          value={itemName || ""} // Ensure value is always a string
           onChange={(e) => setItemName(e.target.value)}
         />
         <input
           type="number"
           placeholder="Quantity"
-          value={quantity}
+          value={quantity || ""} // Ensure value is always a string
           onChange={(e) => setQuantity(e.target.value)}
         />
         <button type="submit">
@@ -91,17 +120,23 @@ function SupplyRequests() {
           </tr>
         </thead>
         <tbody>
-          {supplyRequests.map((request, index) => (
-            <tr key={index}>
-              <td>{request.item}</td>
-              <td>{request.quantity}</td>
-              <td>{request.status}</td>
-              <td>
-                <button onClick={() => handleEdit(index)}>Edit</button>
-                <button onClick={() => handleDelete(index)}>Delete</button>
-              </td>
+          {supplyRequests.length > 0 ? (
+            supplyRequests.map((request) => (
+              <tr key={request.id}>
+                <td>{request.product.name}</td>
+                <td>{request.quantity}</td>
+                <td>{request.status}</td>
+                <td>
+                  <button onClick={() => handleEdit(supplyRequests.findIndex(r => r.id === request.id))}>Edit</button>
+                  <button onClick={() => handleDelete(supplyRequests.findIndex(r => r.id === request.id))}>Delete</button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={4}>No supply requests available</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>

@@ -9,7 +9,7 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
-  token: localStorage.getItem('access_token') || null, // Initialize token from localStorage
+  token: localStorage.getItem('access_token') || null,
   isAuthenticated: !!localStorage.getItem('access_token'), // Initialize isAuthenticated based on token presence
   error: null,
 };

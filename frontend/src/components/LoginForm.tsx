@@ -15,24 +15,19 @@ import GoogleIcon from "@mui/icons-material/Google";
 import { useNavigate } from "react-router-dom";
 import { auth, signInWithPopup, googleAuthProvider } from "./firebaseConfig";
 import { Link as RouterLink } from "react-router-dom";
-import { login, post } from "../services/api";
+import { login } from "../services/api";
 import { AxiosError } from "axios";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [errors, setErrors] = useState<{
-    email: string;
-    password: string;
-  }>({
-    email: "",
-    password: "",
-  });
+  const [errors, setErrors] = useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Check for remembered user in localStorage and set form fields
     const rememberedUser = localStorage.getItem("rememberedUser");
     if (rememberedUser) {
       const { email, password } = JSON.parse(rememberedUser);
@@ -43,6 +38,7 @@ const LoginForm = () => {
   }, []);
 
   const validateForm = () => {
+    // Validate form fields and set error messages
     const tempErrors = {
       email: email ? "" : "Email is required",
       password: password ? "" : "Password is required",
@@ -51,9 +47,7 @@ const LoginForm = () => {
     return Object.values(tempErrors).every((x) => x === "");
   };
 
-  const handleSubmit = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
 
     if (validateForm()) {
@@ -62,41 +56,41 @@ const LoginForm = () => {
         // Perform the login request
         const response = await login(email, password);
 
-        // Extract token, refresh token, role, and message from the response
+        // Extract tokens and role from the response
         const { access_token, refresh_token, role, message } = response.data;
-        console.log(access_token, refresh_token, role);
+        console.log('Access Token:', access_token);
+        console.log('Refresh Token:', refresh_token);
+        console.log('Role:', role);
 
         // Store tokens in localStorage
         localStorage.setItem('access_token', access_token);
         localStorage.setItem('refresh_token', refresh_token);
 
+        // Store user credentials if "Remember Me" is checked
         if (rememberMe) {
-          localStorage.setItem(
-            'rememberedUser',
-            JSON.stringify({ email, password })
-          );
+          localStorage.setItem('rememberedUser', JSON.stringify({ email, password }));
         } else {
           localStorage.removeItem('rememberedUser');
         }
 
-        // Navigate based on role
-        if (role === 'superadmin' || role === 'merchant') {
-          navigate('/merchant-dashboard');
-        } else {
-          switch (role) {
-            case 'admin':
-              navigate('/admin-dashboard');
-              break;
-            case 'clerk':
-              navigate('/clerk-dashboard');
-              break;
-            default:
-              navigate('/merchant-dashboard'); // Default route
-              break;
-          }
+        // Navigate based on user role
+        switch (role) {
+          case 'superadmin':
+          case 'merchant':
+            navigate('/merchant-dashboard');
+            break;
+          case 'admin':
+            navigate('/admin-dashboard');
+            break;
+          case 'clerk':
+            navigate('/clerk-dashboard');
+            break;
+          default:
+            navigate('/merchant-dashboard'); // Default route
+            break;
         }
 
-        alert(message); // Use the message from the response
+        alert(message); // Display message from the response
       } catch (error) {
         const typedError = error as AxiosError<{ message: string }>;
         alert('Login failed: ' + (typedError.response?.data.message || 'Unknown error'));
@@ -105,8 +99,6 @@ const LoginForm = () => {
       }
     }
   };
-
-
 
   const handleGoogleSignIn = async () => {
     try {
@@ -123,12 +115,7 @@ const LoginForm = () => {
     <>
       <Typography
         variant="h6"
-        sx={{
-          mb: 3,
-          textAlign: "center",
-          fontWeight: "bold",
-          fontSize: "1.2rem",
-        }}
+        sx={{ mb: 3, textAlign: "center", fontWeight: "bold", fontSize: "1.2rem" }}
       >
         USER LOGIN
       </Typography>
@@ -167,14 +154,7 @@ const LoginForm = () => {
         sx={{ mb: 1 }}
         variant="outlined"
       />
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 2,
-        }}
-      >
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
         <FormControlLabel
           control={
             <Checkbox
@@ -183,19 +163,10 @@ const LoginForm = () => {
               size="small"
             />
           }
-          label={
-            <Typography variant="body2" sx={{ fontSize: "0.75rem" }}>
-              Remember me
-            </Typography>
-          }
+          label={<Typography variant="body2" sx={{ fontSize: "0.75rem" }}>Remember me</Typography>}
         />
-        <RouterLink
-          to="/forgot-password"
-          style={{ textDecoration: "none" }}
-        >
-          <Typography variant="body2" sx={{ fontSize: "0.75rem", color: "#20B2AA" }}>
-            Forgot password?
-          </Typography>
+        <RouterLink to="/forgot-password" style={{ textDecoration: "none" }}>
+          <Typography variant="body2" sx={{ fontSize: "0.75rem", color: "#20B2AA" }}>Forgot password?</Typography>
         </RouterLink>
       </Box>
       <Button
@@ -203,24 +174,13 @@ const LoginForm = () => {
         variant="contained"
         onClick={handleSubmit}
         disabled={isLoading}
-        sx={{
-          mb: 2,
-          backgroundColor: "#20B2AA",
-          "&:hover": { backgroundColor: "#1C9B9B" },
-          fontSize: "0.9rem",
-          py: 1,
-        }}
+        sx={{ mb: 2, backgroundColor: "#20B2AA", "&:hover": { backgroundColor: "#1C9B9B" }, fontSize: "0.9rem", py: 1 }}
       >
         {isLoading ? <CircularProgress size={24} /> : "Sign In"}
       </Button>
       <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
         <Box sx={{ flex: 1, height: 1, bgcolor: "grey.300" }} />
-        <Typography
-          variant="body2"
-          sx={{ px: 2, color: "grey.500", fontSize: "0.75rem" }}
-        >
-          OR
-        </Typography>
+        <Typography variant="body2" sx={{ px: 2, color: "grey.500", fontSize: "0.75rem" }}>OR</Typography>
         <Box sx={{ flex: 1, height: 1, bgcolor: "grey.300" }} />
       </Box>
       <Button
@@ -228,13 +188,7 @@ const LoginForm = () => {
         variant="outlined"
         startIcon={<GoogleIcon />}
         onClick={handleGoogleSignIn}
-        sx={{
-          borderColor: "#20B2AA",
-          color: "#20B2AA",
-          "&:hover": { borderColor: "#1C9B9B" },
-          fontSize: "0.8rem",
-          py: 1,
-        }}
+        sx={{ borderColor: "#20B2AA", color: "#20B2AA", "&:hover": { borderColor: "#1C9B9B" }, fontSize: "0.8rem", py: 1 }}
       >
         Continue with Google
       </Button>

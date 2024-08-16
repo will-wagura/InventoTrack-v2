@@ -8,13 +8,15 @@ import {
 } from "react-icons/fa";
 import "./Sidebar.css";
 import logo from "../image/inventotrack-high-resolution-logo-transparent-top.png";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout } from '../redux/slices/authSlice'
 
 interface Props {
   setActiveComponent: React.Dispatch<React.SetStateAction<string>>;
 }
+
+
 
 const Sidebar: React.FC<Props> = ({ setActiveComponent }) => {
   const dispatch = useDispatch();
@@ -27,9 +29,17 @@ const Sidebar: React.FC<Props> = ({ setActiveComponent }) => {
     setActiveComponent(component);
   };
 
+
+
   const handleLogout = () => {
+    // Dispatch the logout action
     dispatch(logout());
-    navigate('/login'); // navigate to login page after logout
+
+    // Optionally, wait for the logout action to complete
+    // before navigating away. This is useful if logout involves async operations.
+
+    // Navigate to login page
+    navigate('/login');
   };
 
   return (
@@ -43,10 +53,12 @@ const Sidebar: React.FC<Props> = ({ setActiveComponent }) => {
             className={activeItem === "home" ? "menuItem active" : "menuItem"}
             onClick={() => {
               handleSetActive("home");
-              navigate('home');
+              navigate('merchant-dashboard');
             }}
           >
-            <FaHome /> <span>Home</span>
+            <Link to="/merchant-dashboard">
+              <FaHome /> <span>Dashboard</span>
+            </Link>
           </li>
           <li
             className={activeItem === "itemEntry" ? "menuItem active" : "menuItem"}

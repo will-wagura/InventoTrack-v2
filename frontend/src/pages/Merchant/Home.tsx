@@ -58,40 +58,62 @@ const Home: React.FC = () => {
   const [topSellingStock, setTopSellingStock] = React.useState([]);
   const [lowQuantityStock, setLowQuantityStock] = React.useState([]);
 
+  // Add state for user information
+  const [userInfo, setUserInfo] = React.useState({
+    name: '',
+    email: '',
+    role: ''
+  });
+
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await get('/product');
-        console.log(data);
+        // Fetch product data
+        const productData = await get('/products');
+        console.log(productData);
 
+        // Process and set the states based on product data
         setSalesOverview({
-          sales: data.salesOverview.sales,
-          revenue: data.salesOverview.revenue,
-          profit: data.salesOverview.profit,
-          cost: data.salesOverview.cost,
+          sales: productData.reduce((acc, item) => acc + (item.sales || 0), 0),
+          revenue: productData.reduce((acc, item) => acc + (item.price || 0), 0),
+          profit: productData.reduce((acc, item) => acc + (item.price - item.cost || 0), 0),
+          cost: productData.reduce((acc, item) => acc + (item.cost || 0), 0),
         });
 
         setInventorySummary({
-          quantityInHand: data.inventorySummary.quantityInHand,
-          toBeReceived: data.inventorySummary.toBeReceived,
+          quantityInHand: productData.reduce((acc, item) => acc + (item.quantityInHand || 0), 0),
+          toBeReceived: productData.reduce((acc, item) => acc + (item.toBeReceived || 0), 0),
         });
 
-        setPurchaseOverview({
-          purchases: data.purchaseOverview.purchases,
-          cost: data.purchaseOverview.cost,
-          cancels: data.purchaseOverview.cancels,
-          returns: data.purchaseOverview.returns,
+        // Fetch user data
+        const userData = await get('/me');
+        console.log(userData);
+
+        // Set user information
+        setUserInfo({
+          name: userData.name,
+          email: userData.email,
+          role: userData.role,
         });
 
-        setProductSummary({
-          suppliers: data.productSummary.suppliers,
-          categories: data.productSummary.categories,
-        });
+        // Use real product data for charts and tables if needed
+        setSalesPurchaseData(productData.map(item => ({
+          name: item.name,
+          Purchase: item.purchases || 0,
+          Sales: item.sales || 0
+        })));
+        console.log()
 
-        setSalesPurchaseData(data.salesPurchaseData);
-        setOrderSummaryData(data.orderSummaryData);
-        setTopSellingStock(data.topSellingStock);
-        setLowQuantityStock(data.lowQuantityStock);
+        setOrderSummaryData(productData.map(item => ({
+          name: item.name,
+          Ordered: item.ordered || 0,
+          Cancelled: item.cancelled || 0,
+          Delivered: item.delivered || 0
+        })));
+
+        setTopSellingStock(productData.filter(item => item.soldQuantity > 0));
+        setLowQuantityStock(productData.filter(item => item.remainingQuantity < 10));
+
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
       }
@@ -107,6 +129,26 @@ const Home: React.FC = () => {
       </header>
       <div className="dashboard">
         <div className="row">
+          <div className="card user-info">
+            <h2>User Information</h2>
+            <div className="info">
+              <div className="info-item">
+                <FontAwesomeIcon icon={faUser} className="icon" color="#17a2b8" />
+                <span className="label">Name:</span>
+                <span className="value">{userInfo.name}</span>
+              </div>
+              <div className="info-item">
+                <FontAwesomeIcon icon={faUser} className="icon" color="#17a2b8" />
+                <span className="label">Email:</span>
+                <span className="value">{userInfo.email}</span>
+              </div>
+              <div className="info-item">
+                <FontAwesomeIcon icon={faUser} className="icon" color="#17a2b8" />
+                <span className="label">Role:</span>
+                <span className="value">{userInfo.role}</span>
+              </div>
+            </div>
+          </div>
           <div className="card sales-overview">
             <h2>Sales Overview</h2>
             <div className="stats">

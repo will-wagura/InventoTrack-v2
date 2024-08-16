@@ -18,6 +18,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import SuperuserDashboard from './pages/SuperuserDashboard';
 import LoginForm from './components/LoginForm';
 import Home from './pages/Merchant/Home';
+import SupplyRequest from './components/SupplyRequests'
+import StockInformation from './components/StockInformation';
 const App: React.FC = () => {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -75,6 +77,13 @@ const App: React.FC = () => {
               element={<PrivateRoute element={<Products />} isAuthenticated={isAuthenticated} />}
             />
             <Route
+              path="/supply-requests"
+              element={<SupplyRequest />} />
+            <Route
+              path="/products"
+              element={<PrivateRoute element={<Products />} isAuthenticated={isAuthenticated} />}
+            />
+            <Route
               path="/settings"
               element={<PrivateRoute element={<Settings />} isAuthenticated={isAuthenticated} />}
             />
@@ -82,6 +91,7 @@ const App: React.FC = () => {
               path="/statistic"
               element={<PrivateRoute element={<Statistic />} isAuthenticated={isAuthenticated} />}
             />
+            <Route path="/stock-information" element={<StockInformation />} />
             <Route path="/merchant-dashboard" element={<PrivateRoute element={<Home />} isAuthenticated={isAuthenticated} />} />
             <Route path="/clerk-dashboard" element={<PrivateRoute element={<ClerkDashboard />} isAuthenticated={isAuthenticated} />} />
             <Route path="/admin-dashboard" element={<PrivateRoute element={<AdminDashboard />} isAuthenticated={isAuthenticated} />} />
