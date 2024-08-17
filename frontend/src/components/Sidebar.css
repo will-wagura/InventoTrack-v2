@@ -1,37 +1,48 @@
+
 .sidebar {
+  width: 200px;
+  background-color: white;
+  padding: 20px;
+  /* border-right: 1px solid #e0e0e0; */
+  position: fixed; 
+  height: 80vh;
+  left: 0;
+  top: 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 300px;
-  background-color: #ffffff;
-  padding: 30px;
-  border-right: 1px solid white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  align-items: center;
+
 }
 
 .logo {
-  font-size: 32px; 
+  font-size: 24px;
   font-weight: bold;
   color: #00bfa5;
   margin-bottom: 20px;
   text-align: center;
-  padding-left: 30px;
+  justify-content: center;
+  align-items: center;
+  padding-top: 20px;
 }
 
 .logo img {
-  max-width: 115px;
-  height: auto;
+  max-width: 100%; 
 }
 
 .sidebar ul {
   list-style-type: none;
   padding: 0;
-  margin: 0;
-  padding-left: 30px;
 }
 
 .menuItem {
-  margin-bottom: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: #333;
 }
 
 .sidebar a {
@@ -47,36 +58,28 @@
   color: #00bfa5;
 }
 
-.menuItem.active a {
-  color: #27D8C3;
+.active {
+  color: #00bfa5;
   font-weight: bold;
 }
 
-.sidebar .icon {
-  margin-right: 10px;
-}
-
-.sidebar span {
-  margin-left: 10px;
-}
-
-.logout-container {
-  margin-top: auto;
-  margin-bottom: 130px;
-  padding-left: 10px;
-}
-
-.logout {
-  text-decoration: none;
-  color: #ffffff;
-  color: #00bfa5; 
-  padding: 10px 20px; 
-  border-radius: 4px; 
+.logout-btn {
+  /* background-color: #00bfa5; */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-bottom: 20px;
   display: flex;
   align-items: center;
 }
 
-.logout:hover {
-  color: #ffffff; 
-  background-color: #2b9288; 
+.logout-btn h3 {
+  margin-left: 30px;
+  padding: 5px 10px;
+  transition: background-color 0.3s ease;
+}
+
+.logout-btn h3:hover {
+  background-color: #41726c;
 }

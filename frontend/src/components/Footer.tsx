@@ -1,75 +1,90 @@
-import './Footer.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebook, faTwitter, faLinkedin, faInstagram } from '@fortawesome/free-brands-svg-icons';
 
-interface FooterProps {
-  setActiveComponent: (component: string) => void;
-}
-
-const Footer = ({ setActiveComponent }: FooterProps) => {
+import { Box, Typography, Link, Container } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
+import "./Footer.css";
+import { SiHuawei } from "react-icons/si";
+import { IoLogoWindows } from "react-icons/io";
+import { FaAppStore, FaGooglePlay } from "react-icons/fa";
+const Footer = () => {
   return (
-    <footer className="footer">
-      <div className="container">
-        <div className="logoSection">
-          <img src="/logo.png" alt="InventoTrack Logo" className="logo" /> 
-          <p>Inventory simplified for small teams and developers.</p>
-        </div>
-        <div className="linksSection">
-          <div className="column">
-            <h4>Follow us</h4>
-            <div className="socialIcons">
-              <a href="https://facebook.com" aria-label="Facebook"><FontAwesomeIcon icon={faFacebook} /></a>
-              <a href="https://twitter.com" aria-label="Twitter"><FontAwesomeIcon icon={faTwitter} /></a>
-              <a href="https://linkedin.com" aria-label="LinkedIn"><FontAwesomeIcon icon={faLinkedin} /></a>
-              <a href="https://instagram.com" aria-label="Instagram"><FontAwesomeIcon icon={faInstagram} /></a>
-            </div>
-            <p>Call us</p>
-            <p>+254 792 313 772</p>
-          </div>
-          <div className="column">
-            <h4>Product</h4>
-            <ul>
-              <li><a href="#" onClick={() => setActiveComponent('landingPage')}>Landing Page</a></li>
-              <li><a href="#" onClick={() => setActiveComponent('popupBuilder')}>Popup Builder</a></li>
-              <li><a href="#" onClick={() => setActiveComponent('webDesign')}>Web-design</a></li>
-              <li><a href="#" onClick={() => setActiveComponent('content')}>Content</a></li>
-              <li><a href="#" onClick={() => setActiveComponent('integrations')}>Integrations</a></li>
-            </ul>
-          </div>
-          <div className="column">
-            <h4>Use Cases</h4>
-            <ul>
-              <li><a href="#" onClick={() => setActiveComponent('webDesigners')}>Web-designers</a></li>
-              <li><a href="#" onClick={() => setActiveComponent('marketers')}>Marketers</a></li>
-              <li><a href="#" onClick={() => setActiveComponent('smallBusiness')}>Small Business</a></li>
-              <li><a href="#" onClick={() => setActiveComponent('websiteBuilder')}>Website Builder</a></li>
-            </ul>
-          </div>
-          <div className="column">
-            <h4>Company</h4>
-            <ul>
-              <li><a href="#" onClick={() => setActiveComponent('aboutUs')}>About Us</a></li>
-              <li><a href="#" onClick={() => setActiveComponent('careers')}>Careers</a></li>
-              <li><a href="#" onClick={() => setActiveComponent('faqs')}>FAQs</a></li>
-              <li><a href="#" onClick={() => setActiveComponent('teams')}>Teams</a></li>
-              <li><a href="#" onClick={() => setActiveComponent('contactUs')}>Contact Us</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div className="bottomBar">
-        <div className="container">
-          <p>&copy; 2024 All Rights Reserved.</p>
-          <ul>            
-            <li><a href="https://example.com/privacy-policy">Privacy Policy</a></li>
-            <li><a href="https://example.com/terms-of-use">Terms of Use</a></li>
-            <li><a href="https://example.com/sales-and-refunds">Sales and Refunds</a></li>
-            <li><a href="https://example.com/legal">Legal</a></li>
-            <li><a href="https://example.com/site-map">Site Map</a></li>
-          </ul>
-        </div>
-      </div>
-    </footer>
+    <Box
+      component="footer"
+      sx={{
+        mt: "auto",
+        py: 3,
+        backgroundColor: "background.paper",
+        borderTop: "1px solid",
+        borderColor: "divider",
+      }}
+    >
+      <Container maxWidth="lg">
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Box sx={{ display: "flex", gap: 2, mb: { xs: 2, sm: 0 } }}>
+            <SiHuawei size={25} />
+            <IoLogoWindows size={25} />
+            <FaGooglePlay size={25} />
+            <FaAppStore size={25} />
+          </Box>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Link
+              component={RouterLink}
+              to="/about"
+              color="inherit"
+              underline="hover"
+            >
+              About
+            </Link>
+            <Link
+              component={RouterLink}
+              to="/features"
+              color="inherit"
+              underline="hover"
+            >
+              Features
+            </Link>
+            <Link
+              component={RouterLink}
+              to="/pricing"
+              color="inherit"
+              underline="hover"
+            >
+              Pricing
+            </Link>
+            <Link
+              component={RouterLink}
+              to="/gallery"
+              color="inherit"
+              underline="hover"
+            >
+              Gallery
+            </Link>
+            <Link
+              component={RouterLink}
+              to="/team"
+              color="inherit"
+              underline="hover"
+            >
+              Team
+            </Link>
+          </Box>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            En
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            © 2024 All Rights Reserved
+          </Typography>
+        </Box>
+      </Container>
+    </Box>
   );
 };
 
