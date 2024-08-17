@@ -45,8 +45,10 @@ const App: React.FC = () => {
     }
   };
 
+function App() {
   return (
     <Router>
+
       <div style={{ display: 'flex' }}>
         {isAuthenticated && <Sidebar />}
         <div style={{ flex: 1 }}>

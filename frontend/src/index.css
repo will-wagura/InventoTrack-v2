@@ -1,42 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Afacad:ital,wght@0,400..700;1,400..700&display=swap');
 
-:root {
-	font-family: 'Afacad', sans-serif !important;
-	line-height: 1.5;
-	font-weight: 400;
-
-	color-scheme: light dark;
-	color: white;
-	background-color: #f8f9fa;
-	overflow-x: hidden;
-
-	font-synthesis: none;
-	text-rendering: optimizeLegibility;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-}
-
-button {
-	color: white;
-	border: none;
-	border-radius: 5px;
-	padding: 8px 15px;
-	cursor: pointer;
-	margin-right: 20px;
-}
-button:hover {
-	border-color: #218872;
-}
-button:focus,
-button:focus-visible {
-	outline: 4px auto -webkit-focus-ring-color;
-}
-
 /* For webkit-based browsers (Chrome, Safari, etc.) */
 ::-webkit-scrollbar {
 	width: 20px; /* Reduced width of the vertical scrollbar */
 	height: 5px; /* Reduced height of the horizontal scrollbar */
 }
+
+
 
 ::-webkit-scrollbar-track {
 	background: transparent;
@@ -53,7 +23,31 @@ button:focus-visible {
 	scrollbar-color: #27d8c3 transparent;
 }
 
+
+/* For webkit-based browsers (Chrome, Safari, etc.) */
+::-webkit-scrollbar {
+  width: 20px; /* Reduced width of the vertical scrollbar */
+  height: 5px; /* Reduced height of the horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #27D8C3;
+  border-radius: 2px; /* Rounded corners for the thumb */
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #27D8C3 transparent;
+}
+
+
 @media (prefers-color-scheme: light) {
+
 	:root {
 		color: #213547;
 		background-color: #ffffff;

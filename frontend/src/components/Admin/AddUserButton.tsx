@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import AddUserModal from './AddUserModal';
 import './AddUserButton.css';
 
@@ -19,6 +20,7 @@ const AddUserButton: React.FC<AddUserButtonProps> = ({ onAddUser }) => {
 
   return (
     <div className="add-user">
+
       <button className="add-user-btn" onClick={handleOpenModal}>Add New User</button>
       {isModalOpen && <AddUserModal onAddUser={onAddUser} onClose={handleCloseModal} />}
     </div>
